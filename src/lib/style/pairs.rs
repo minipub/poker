@@ -1,61 +1,8 @@
 use crate::lib::card::*;
-
-#[derive(Debug)]
-enum CardStyle {
-    Threes(Threes),
-}
-
-#[derive(Debug)]
-struct Bomb(Box<[Card; 4]>);
-
-#[derive(Debug)]
-struct Threes(Box<[[Card; 3]]>);
-
-#[derive(Debug)]
-struct ThreeWithOnes(Box<[([Card; 3], [Card; 1])]>);
-
-#[derive(Debug)]
-struct ThreeWithTwos(Box<[([Card; 3], [Card; 2])]>);
-
-#[derive(Debug)]
-pub struct Chain(pub Box<Vec<Card>>);
+use crate::lib::style::interface::Suit;
 
 #[derive(Debug)]
 pub struct Pairs(pub Box<Vec<[Card; 2]>>);
-
-pub trait Suit {
-    type Error;
-    fn suit(&mut self, _: Box<Vec<Card>>) -> Option<Self::Error>;
-}
-
-impl Suit for Chain {
-    type Error = &'static str;
-
-    fn suit(&mut self, cs: Box<Vec<Card>>) -> Option<Self::Error> {
-        if cs.len() < 5 {
-            return Some("not reach 5 elements.");
-        }
-
-        let mut v = vec![Card::default(); cs.len()];
-        v.clone_from_slice(&cs);
-
-        // println!("before sort, v: {:?}", v);
-        v.sort_by(|x, y| x.partial_cmp(y).unwrap());
-        // println!("after sort, v: {:?}", v);
-
-        let mut m = v[0].unwrap_point();
-        for x in &v {
-            let xp = x.unwrap_point();
-            if m != xp {
-                return Some("not continous.");
-            }
-            m = xp + 1;
-        }
-
-        self.0 = Box::new(v);
-        None
-    }
-}
 
 impl Suit for Pairs {
     type Error = &'static str;

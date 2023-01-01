@@ -1,6 +1,4 @@
 use rand::prelude::*;
-use std::cmp::Ordering;
-use std::cmp::{PartialEq, PartialOrd};
 
 use crate::lib::card::*;
 use crate::lib::player::*;
