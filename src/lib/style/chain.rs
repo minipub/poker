@@ -1,5 +1,5 @@
 use crate::lib::card::*;
-use crate::lib::style::interface::Suit;
+use crate::lib::style::iface::Suit;
 
 #[derive(Debug)]
 pub struct Chain(pub Box<Vec<Card>>);

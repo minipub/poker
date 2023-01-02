@@ -5,7 +5,7 @@ use crate::lib::judger::*;
 use crate::lib::player::*;
 use crate::lib::point::*;
 use crate::lib::style::chain::Chain;
-use crate::lib::style::interface::Suit;
+use crate::lib::style::iface::Suit;
 use crate::lib::style::pairs::Pairs;
 
 pub fn manage() {
