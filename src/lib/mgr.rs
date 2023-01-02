@@ -7,6 +7,7 @@ use crate::lib::point::*;
 use crate::lib::style::chain::Chain;
 use crate::lib::style::iface::Suit;
 use crate::lib::style::pairs::Pairs;
+use crate::lib::style::three_with_ones::ThreeWithOnes;
 
 pub fn manage() {
     let t1 = Card::new(Point::Ten(0), Color::Spades);
@@ -54,4 +55,9 @@ pub fn manage() {
     println!("p1: {:?}, {}", p1, p1.cards_count());
     println!("p2: {:?}, {}", p2, p2.cards_count());
     println!("p3: {:?}, {}", p3, p3.cards_count());
+
+    let mut pto = ThreeWithOnes(Box::new([([Card::default(); 3], [Card::default(); 1])]));
+    let ptoe = pto.suit(Box::new(vec![t1, t1, t2, t1]));
+    println!("ThreeWithOnes: {:?}", pto);
+    println!("ptoe: {:?}", ptoe);
 }
