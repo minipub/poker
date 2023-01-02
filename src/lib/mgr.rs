@@ -56,7 +56,7 @@ pub fn manage() {
     println!("p2: {:?}, {}", p2, p2.cards_count());
     println!("p3: {:?}, {}", p3, p3.cards_count());
 
-    let mut pto = ThreeWithOnes(Box::new([([Card::default(); 3], [Card::default(); 1])]));
+    let mut pto = ThreeWithOnes(Box::new(vec![]));
     let ptoe = pto.suit(Box::new(vec![t1, t1, t2, t1]));
     println!("ThreeWithOnes: {:?}", pto);
     println!("ptoe: {:?}", ptoe);

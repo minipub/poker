@@ -4,7 +4,7 @@ use crate::lib::card::*;
 use crate::lib::style::iface::*;
 
 #[derive(Debug)]
-pub struct ThreeWithOnes(pub Box<[([Card; 3], [Card; 1])]>);
+pub struct ThreeWithOnes(pub Box<Vec<([Card; 3], [Card; 1])>>);
 
 impl Suit for ThreeWithOnes {
     type Error = &'static str;
@@ -25,6 +25,44 @@ impl Suit for ThreeWithOnes {
         }
 
         println!("buckets: {:?}", buckets);
+
+        if buckets.len() % 2 == 1 {
+            return Some("ThreeWithOnes number must be plural.");
+        }
+
+        let mut threes: Vec<[Card; 3]> = Vec::new();
+        let mut ones: Vec<[Card; 1]> = Vec::new();
+
+        for (k, v) in buckets {
+            if v.len() == 3 {
+                threes.push([v[0], v[1], v[2]]);
+            } else if v.len() == 1 {
+                ones.push([v[0]]);
+            } else {
+                return Some("ThreeWithOnes must be consist of 3s and 1.");
+            }
+        }
+
+        if threes.len() != ones.len() {
+            return Some("ThreeWithOnes must be consist of pairs of 3s and 1.");
+        }
+
+        threes.sort_by(|x, y| x[0].partial_cmp(&y[0]).unwrap());
+
+        let mut i = 0;
+        while i < threes.len() && threes[i][0].unwrap_point() + 1 == threes[i + 1][0].unwrap_point()
+        {
+            i += 1;
+        }
+
+        let mut vs: Vec<([Card; 3], [Card; 1])> = vec![];
+
+        let mut i = 0;
+        while i < threes.len() {
+            vs.push((threes.pop().unwrap(), ones.pop().unwrap()));
+        }
+
+        self.0 = Box::new(vs);
 
         None
     }
