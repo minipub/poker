@@ -20,44 +20,44 @@ pub fn manage() {
 
     let t5 = Card::new(Point::Ace(0), Color::Hearts);
 
-    println!("{:?}", t1 < t2);
+    // println!("{:?}", t1 < t2);
 
-    let mut pc = Chain(Box::new(vec![]));
-    let ce = pc.suit(Box::new(vec![t1, t2, t3, t4, t5]));
-    println!("Chain: {:?}", pc);
-    println!("ce: {:?}", ce);
+    // let mut pc = Chain(Box::new(vec![]));
+    // let ce = pc.suit(Box::new(vec![t1, t2, t3, t4, t5]));
+    // println!("Chain: {:?}", pc);
+    // println!("ce: {:?}", ce);
 
-    let mut pp = Pairs(Box::new(vec![]));
-    let pe = pp.suit(Box::new(vec![t3, t2, t4, t3, t4, t2]));
-    println!("Pair: {:?}", pp);
-    println!("pe: {:?}", pe);
+    // let mut pp = Pairs(Box::new(vec![]));
+    // let pe = pp.suit(Box::new(vec![t3, t2, t4, t3, t4, t2]));
+    // println!("Pair: {:?}", pp);
+    // println!("pe: {:?}", pe);
 
-    let vs = Deck::new(1);
-    // println!("deck card: {:?}", vs);
+    // let vs = Deck::new(1);
+    // // println!("deck card: {:?}", vs);
 
-    let mut j = Judger::new(vs);
-    j.shuffle();
+    // let mut j = Judger::new(vs);
+    // j.shuffle();
 
-    println!("judger shuffle: {:?}", j);
-    println!("card num: {:?}", j.cards_count());
+    // println!("judger shuffle: {:?}", j);
+    // println!("card num: {:?}", j.cards_count());
 
-    j.reserve(3);
-    println!("judger reserve: {:?}", j);
+    // j.reserve(3);
+    // println!("judger reserve: {:?}", j);
 
-    let mut p1 = Player::new(1, "john");
-    let mut p2 = Player::new(2, "mike");
-    let mut p3 = Player::new(3, "alex");
+    // let mut p1 = Player::new(1, "john");
+    // let mut p2 = Player::new(2, "mike");
+    // let mut p3 = Player::new(3, "alex");
 
-    j.deal([&mut p1, &mut p2, &mut p3]);
+    // j.deal([&mut p1, &mut p2, &mut p3]);
 
-    j.deal_lord(&mut p2);
+    // j.deal_lord(&mut p2);
 
-    println!("p1: {:?}, {}", p1, p1.cards_count());
-    println!("p2: {:?}, {}", p2, p2.cards_count());
-    println!("p3: {:?}, {}", p3, p3.cards_count());
+    // println!("p1: {:?}, {}", p1, p1.cards_count());
+    // println!("p2: {:?}, {}", p2, p2.cards_count());
+    // println!("p3: {:?}, {}", p3, p3.cards_count());
 
     let mut pto = ThreeWithOnes(Box::new(vec![]));
-    let ptoe = pto.suit(Box::new(vec![t1, t1, t2, t1]));
+    let ptoe = pto.suit(Box::new(vec![t1, t1, t2, t1, t3, t5, t3, t3]));
     println!("ThreeWithOnes: {:?}", pto);
     println!("ptoe: {:?}", ptoe);
 }

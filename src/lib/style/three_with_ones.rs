@@ -47,19 +47,27 @@ impl Suit for ThreeWithOnes {
             return Some("ThreeWithOnes must be consist of pairs of 3s and 1.");
         }
 
+        // println!("a threes: {:?}", threes);
         threes.sort_by(|x, y| x[0].partial_cmp(&y[0]).unwrap());
+        // println!("b threes: {:?}", threes);
 
-        let mut i = 0;
-        while i < threes.len() && threes[i][0].unwrap_point() + 1 == threes[i + 1][0].unwrap_point()
-        {
-            i += 1;
+        if threes.len() > 1 {
+            let mut i = 0;
+            while i < threes.len() - 1
+                && threes[i][0].unwrap_point() + 1 == threes[i + 1][0].unwrap_point()
+            {
+                i += 1;
+            }
+
+            if i + 1 != threes.len() {
+                return Some("ThreeWithOnes must be consist of continuous threes.");
+            }
         }
 
         let mut vs: Vec<([Card; 3], [Card; 1])> = vec![];
 
-        let mut i = 0;
-        while i < threes.len() {
-            vs.push((threes.pop().unwrap(), ones.pop().unwrap()));
+        while threes.len() > 0 {
+            vs.push((threes.remove(0), ones.remove(0)));
         }
 
         self.0 = Box::new(vs);
