@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+use std::cmp::{PartialEq, PartialOrd};
 use std::collections::HashMap;
 
 use crate::lib::card::*;
@@ -73,5 +75,50 @@ impl Suit for ThreeWithOnes {
         self.0 = Box::new(vs);
 
         None
+    }
+}
+
+impl Layer for ThreeWithOnes {
+    type Other = ThreeWithOnes;
+
+    fn same_layer(&self, other: Self::Other) -> bool {
+        self.0.len() == other.0.len()
+    }
+}
+
+impl PartialEq for ThreeWithOnes {
+    fn eq(&self, other: &Self) -> bool {
+        self.0[0].0[0] == other.0[0].0[0]
+    }
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialOrd for ThreeWithOnes {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        if self.gt(other) {
+            Some(Ordering::Greater)
+        } else if self.lt(other) {
+            Some(Ordering::Less)
+        } else {
+            Some(Ordering::Equal)
+        }
+    }
+
+    fn gt(&self, other: &Self) -> bool {
+        self.0[0].0[0] > other.0[0].0[0]
+    }
+
+    fn ge(&self, other: &Self) -> bool {
+        self.0[0].0[0] >= other.0[0].0[0]
+    }
+
+    fn le(&self, other: &Self) -> bool {
+        !self.gt(other)
+    }
+
+    fn lt(&self, other: &Self) -> bool {
+        !self.ge(other)
     }
 }
