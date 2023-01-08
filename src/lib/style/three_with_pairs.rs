@@ -11,7 +11,7 @@ pub struct ThreeWithPairs(pub Vec<([Card; 3], [Card; 2])>);
 impl Suit for ThreeWithPairs {
     type Error = &'static str;
 
-    fn suit(&mut self, cs: Box<Vec<Card>>) -> Option<Self::Error> {
+    fn suit(&mut self, cs: &Vec<Card>) -> Option<Self::Error> {
         if cs.len() < 5 && cs.len() % 5 != 0 {
             return Some("ThreeWithPairs number must be 5s.");
         }

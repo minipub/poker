@@ -10,7 +10,7 @@ pub struct Chain(pub Box<Vec<Card>>);
 impl Suit for Chain {
     type Error = &'static str;
 
-    fn suit(&mut self, cs: Box<Vec<Card>>) -> Option<Self::Error> {
+    fn suit(&mut self, cs: &Vec<Card>) -> Option<Self::Error> {
         if cs.len() < 5 {
             return Some("not reach 5 elements.");
         }

@@ -11,7 +11,7 @@ pub struct ThreeWithOnes(pub Box<Vec<([Card; 3], [Card; 1])>>);
 impl Suit for ThreeWithOnes {
     type Error = &'static str;
 
-    fn suit(&mut self, cs: Box<Vec<Card>>) -> Option<Self::Error> {
+    fn suit(&mut self, cs: &Vec<Card>) -> Option<Self::Error> {
         if cs.len() < 4 && cs.len() % 4 != 0 {
             return Some("ThreeWithOnes number must be 4s.");
         }

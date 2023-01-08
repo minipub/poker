@@ -36,5 +36,5 @@ impl<'a> Player<'a> {
         self.seat = i as i8;
     }
 
-    // pub fn play(arg: Type) -> RetType {}
+    pub fn play(cs: Box<Vec<Card>>) {}
 }

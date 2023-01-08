@@ -10,7 +10,7 @@ pub struct Pairs(pub Box<Vec<[Card; 2]>>);
 impl Suit for Pairs {
     type Error = &'static str;
 
-    fn suit(&mut self, cs: Box<Vec<Card>>) -> Option<Self::Error> {
+    fn suit(&mut self, cs: &Vec<Card>) -> Option<Self::Error> {
         if cs.len() < 2 {
             return Some("chain pairs number must be ge 2.");
         }

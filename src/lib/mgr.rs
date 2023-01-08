@@ -58,7 +58,7 @@ pub fn test() {
     // println!("p3: {:?}, {}", p3, p3.cards_count());
 
     let mut pto = ThreeWithOnes(Box::new(vec![]));
-    let ptoe = pto.suit(Box::new(vec![t1, t1, t2, t1, t3, t5, t3, t3]));
+    let ptoe = pto.suit(&vec![t1, t1, t2, t1, t3, t5, t3, t3]);
     println!("ThreeWithOnes: {:?}", pto);
     println!("ptoe: {:?}", ptoe);
 }
