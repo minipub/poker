@@ -62,7 +62,7 @@ impl Judger {
     //     }
     // }
 
-    pub fn deal(&mut self, mut ps: [&mut Player; 3]) {
+    pub fn deal(&mut self, mut ps: Vec<&mut Player>) {
         let mut next = true;
         while next {
             for p in ps.iter_mut() {

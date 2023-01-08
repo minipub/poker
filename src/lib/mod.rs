@@ -5,4 +5,5 @@ pub mod judger;
 pub mod mgr;
 pub mod player;
 pub mod point;
+pub mod session;
 pub mod style;

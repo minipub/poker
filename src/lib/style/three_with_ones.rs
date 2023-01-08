@@ -12,7 +12,7 @@ impl Suit for ThreeWithOnes {
     type Error = &'static str;
 
     fn suit(&mut self, cs: Box<Vec<Card>>) -> Option<Self::Error> {
-        if cs.len() % 4 != 0 {
+        if cs.len() < 4 && cs.len() % 4 != 0 {
             return Some("ThreeWithOnes number must be 4s.");
         }
 

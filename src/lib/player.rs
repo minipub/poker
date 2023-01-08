@@ -6,6 +6,7 @@ pub struct Player<'a> {
     name: &'a str,
     is_lord: bool,
     cards: Box<Vec<Card>>,
+    seat: i8,
 }
 
 impl<'a> Player<'a> {
@@ -15,6 +16,7 @@ impl<'a> Player<'a> {
             name,
             is_lord: false,
             cards: Box::new(vec![]),
+            seat: -1,
         }
     }
 
@@ -29,4 +31,10 @@ impl<'a> Player<'a> {
     pub fn cards_count(&self) -> usize {
         self.cards.len()
     }
+
+    pub fn set_seat(&mut self, i: usize) {
+        self.seat = i as i8;
+    }
+
+    // pub fn play(arg: Type) -> RetType {}
 }

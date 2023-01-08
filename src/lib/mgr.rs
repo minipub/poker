@@ -4,12 +4,13 @@ use crate::lib::deck::*;
 use crate::lib::judger::*;
 use crate::lib::player::*;
 use crate::lib::point::*;
+use crate::lib::session::*;
 use crate::lib::style::chain::Chain;
 use crate::lib::style::iface::Suit;
 use crate::lib::style::pairs::Pairs;
 use crate::lib::style::three_with_ones::ThreeWithOnes;
 
-pub fn manage() {
+pub fn test() {
     let t1 = Card::new(Point::Ten(0), Color::Spades);
 
     let t2 = Card::new(Point::King(0), Color::Plum);
@@ -60,4 +61,23 @@ pub fn manage() {
     let ptoe = pto.suit(Box::new(vec![t1, t1, t2, t1, t3, t5, t3, t3]));
     println!("ThreeWithOnes: {:?}", pto);
     println!("ptoe: {:?}", ptoe);
+}
+
+pub fn manage() {
+    let mut s = Session::new(1001, 1, SessionType::Three);
+
+    let mut p1 = Player::new(1, "john");
+    let mut p2 = Player::new(2, "mike");
+    let mut p3 = Player::new(3, "alex");
+
+    s.push_player(p1);
+    s.push_player(p2);
+    s.push_player(p3);
+
+    let started = s.begin();
+    if started {
+        s.set_lord(2);
+    }
+
+    println!("session: {:?}", s);
 }

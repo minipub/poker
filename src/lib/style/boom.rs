@@ -5,7 +5,7 @@ use crate::lib::card::*;
 use crate::lib::style::iface::Suit;
 
 #[derive(Debug)]
-struct Bomb(Box<[Card; 4]>);
+pub struct Bomb(Box<[Card; 4]>);
 
 impl Suit for Bomb {
     type Error = &'static str;
