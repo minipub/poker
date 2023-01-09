@@ -6,7 +6,7 @@ use crate::lib::card::*;
 use crate::lib::style::iface::*;
 
 #[derive(Debug)]
-pub struct ThreeWithOnes(pub Box<Vec<([Card; 3], [Card; 1])>>);
+pub struct ThreeWithOnes(pub Vec<([Card; 3], [Card; 1])>);
 
 impl Suit for ThreeWithOnes {
     type Error = &'static str;
@@ -72,7 +72,7 @@ impl Suit for ThreeWithOnes {
             vs.push((threes.remove(0), ones.remove(0)));
         }
 
-        self.0 = Box::new(vs);
+        self.0 = vs;
 
         None
     }

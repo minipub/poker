@@ -5,7 +5,7 @@ use crate::lib::card::*;
 use crate::lib::style::iface::*;
 
 #[derive(Debug)]
-pub struct Pairs(pub Box<Vec<[Card; 2]>>);
+pub struct Pairs(pub Vec<[Card; 2]>);
 
 impl Suit for Pairs {
     type Error = &'static str;
@@ -52,7 +52,7 @@ impl Suit for Pairs {
             i += 2;
         }
 
-        self.0 = Box::new(v2);
+        self.0 = v2;
 
         None
     }

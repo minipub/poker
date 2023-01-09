@@ -11,15 +11,15 @@ use crate::lib::style::pairs::Pairs;
 use crate::lib::style::three_with_ones::ThreeWithOnes;
 
 pub fn test() {
-    let t1 = Card::new(Point::Ten(0), Color::Spades);
+    // let t1 = Card::new(Point::Ten(0), Color::Spades);
 
-    let t2 = Card::new(Point::King(0), Color::Plum);
+    // let t2 = Card::new(Point::King(0), Color::Plum);
 
-    let t3 = Card::new(Point::Jack(0), Color::Square);
+    // let t3 = Card::new(Point::Jack(0), Color::Square);
 
-    let t4 = Card::new(Point::Queen(0), Color::Square);
+    // let t4 = Card::new(Point::Queen(0), Color::Square);
 
-    let t5 = Card::new(Point::Ace(0), Color::Hearts);
+    // let t5 = Card::new(Point::Ace(0), Color::Hearts);
 
     // println!("{:?}", t1 < t2);
 
@@ -57,10 +57,10 @@ pub fn test() {
     // println!("p2: {:?}, {}", p2, p2.cards_count());
     // println!("p3: {:?}, {}", p3, p3.cards_count());
 
-    let mut pto = ThreeWithOnes(Box::new(vec![]));
-    let ptoe = pto.suit(&vec![t1, t1, t2, t1, t3, t5, t3, t3]);
-    println!("ThreeWithOnes: {:?}", pto);
-    println!("ptoe: {:?}", ptoe);
+    // let mut pto = ThreeWithOnes(Box::new(vec![]));
+    // let ptoe = pto.suit(&vec![t1, t1, t2, t1, t3, t5, t3, t3]);
+    // println!("ThreeWithOnes: {:?}", pto);
+    // println!("ptoe: {:?}", ptoe);
 }
 
 pub fn manage() {

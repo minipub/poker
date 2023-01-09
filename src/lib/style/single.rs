@@ -9,6 +9,7 @@ impl Suit for Single {
 
     fn suit(&mut self, cs: &Vec<Card>) -> Option<Self::Error> {
         if cs.len() == 1 {
+            self.0 = cs[0];
             None
         } else {
             Some("Single number must be 1.")
