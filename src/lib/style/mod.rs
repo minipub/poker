@@ -38,54 +38,21 @@ impl CardStyle {
     //     }
     // }
 
-    pub fn unwrap(cs: Vec<Card>) -> Option<CardStyle> {
-        {
-            let mut s = boom::Bomb([Card::default(); 4]);
-            let e = s.suit(&cs);
-            if e == None {
-                return Some(CardStyle::Boom(s));
-            }
-        }
-        {
-            let mut s = chain::Chain(Box::new(vec![]));
-            let e = s.suit(&cs);
-            if e == None {
-                return Some(CardStyle::Chain(s));
-            }
-        }
-        {
-            let mut s = pairs::Pairs(vec![]);
-            let e = s.suit(&cs);
-            if e == None {
-                return Some(CardStyle::Pairs(s));
-            }
-        }
-        {
-            let mut s = three_with_ones::ThreeWithOnes(vec![]);
-            let e = s.suit(&cs);
-            if e == None {
-                return Some(CardStyle::ThreeWithOnes(s));
-            }
-        }
-        {
-            let mut s = three_with_pairs::ThreeWithPairs(vec![]);
-            let e = s.suit(&cs);
-            if e == None {
-                return Some(CardStyle::ThreeWithPairs(s));
-            }
-        }
-        {
-            let mut s = threes::Threes(vec![]);
-            let e = s.suit(&cs);
-            if e == None {
-                return Some(CardStyle::Threes(s));
-            }
-        }
-        {
-            let mut s = single::Single(Card::default());
-            let e = s.suit(&cs);
-            if e == None {
-                return Some(CardStyle::Single(s));
+    pub fn unwrap(cs: &Vec<Card>) -> Option<CardStyle> {
+        let tss: Vec<ToStyle> = vec![
+            boom::Bomb::to_style,
+            chain::Chain::to_style,
+            pairs::Pairs::to_style,
+            three_with_ones::ThreeWithOnes::to_style,
+            three_with_pairs::ThreeWithPairs::to_style,
+            threes::Threes::to_style,
+            single::Single::to_style,
+        ];
+
+        for f in tss {
+            let s = f(&cs);
+            if s.is_some() {
+                return s;
             }
         }
 
@@ -105,7 +72,7 @@ mod tests {
     fn test_single() {
         let t = Card::new(Point::Ten(0), Color::Spades);
 
-        let a = match CardStyle::unwrap(vec![t]) {
+        let a = match CardStyle::unwrap(&vec![t]) {
             Some(CardStyle::Single(single::Single(x))) => x.unwrap_point(),
             _ => {
                 panic!("not single");
@@ -123,7 +90,7 @@ mod tests {
         let t4 = Card::new(Point::Queen(0), Color::Square);
         let t5 = Card::new(Point::Ace(0), Color::Hearts);
 
-        let a = match CardStyle::unwrap(vec![t1, t2, t3, t4, t5]) {
+        let a = match CardStyle::unwrap(&vec![t1, t2, t3, t4, t5]) {
             Some(CardStyle::Chain(chain::Chain(x))) => x,
             _ => {
                 panic!("not chain");

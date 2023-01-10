@@ -3,9 +3,21 @@ use std::cmp::{PartialEq, PartialOrd};
 
 use crate::lib::card::*;
 use crate::lib::style::iface::Suit;
+use crate::lib::style::CardStyle;
 
 #[derive(Debug)]
 pub struct Bomb(pub [Card; 4]);
+
+impl Bomb {
+    pub fn to_style(cs: &Vec<Card>) -> Option<CardStyle> {
+        let mut s = Bomb([Card::default(); 4]);
+        let e = s.suit(&cs);
+        if e == None {
+            return Some(CardStyle::Boom(s));
+        }
+        None
+    }
+}
 
 impl Suit for Bomb {
     type Error = &'static str;

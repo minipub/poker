@@ -4,9 +4,21 @@ use std::collections::HashMap;
 
 use crate::lib::card::*;
 use crate::lib::style::iface::*;
+use crate::lib::style::CardStyle;
 
 #[derive(Debug)]
 pub struct ThreeWithOnes(pub Vec<([Card; 3], [Card; 1])>);
+
+impl ThreeWithOnes {
+    pub fn to_style(cs: &Vec<Card>) -> Option<CardStyle> {
+        let mut s = ThreeWithOnes(vec![]);
+        let e = s.suit(&cs);
+        if e == None {
+            return Some(CardStyle::ThreeWithOnes(s));
+        }
+        None
+    }
+}
 
 impl Suit for ThreeWithOnes {
     type Error = &'static str;

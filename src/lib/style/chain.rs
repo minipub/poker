@@ -3,9 +3,21 @@ use std::cmp::{PartialEq, PartialOrd};
 
 use crate::lib::card::*;
 use crate::lib::style::iface::*;
+use crate::lib::style::CardStyle;
 
 #[derive(Debug)]
 pub struct Chain(pub Box<Vec<Card>>);
+
+impl Chain {
+    pub fn to_style(cs: &Vec<Card>) -> Option<CardStyle> {
+        let mut s = Chain(Box::new(vec![]));
+        let e = s.suit(&cs);
+        if e == None {
+            return Some(CardStyle::Chain(s));
+        }
+        None
+    }
+}
 
 impl Suit for Chain {
     type Error = &'static str;

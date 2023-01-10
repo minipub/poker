@@ -1,4 +1,5 @@
 use crate::lib::card::*;
+use crate::lib::style::CardStyle;
 
 pub trait Suit {
     type Error;
@@ -11,3 +12,5 @@ pub trait Layer {
         true
     }
 }
+
+pub type ToStyle = fn(cs: &Vec<Card>) -> Option<CardStyle>;
