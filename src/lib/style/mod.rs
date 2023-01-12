@@ -22,21 +22,96 @@ pub enum CardStyle {
 }
 
 impl CardStyle {
-    // pub fn cmp(round: Option<CardStyle>, cs: Box<Vec<Card>>) {
-    //     match round {
-    //         Some(CardStyle::Boom(x)) => {}
-    //         Some(CardStyle::Chain(x)) => {
-    //             let mut pc = chain::Chain(Box::new(vec![]));
-    //             let ce = pc.suit(cs);
-    //         }
-    //         Some(CardStyle::Pairs(x)) => {}
-    //         Some(CardStyle::ThreeWithOnes(x)) => {}
-    //         Some(CardStyle::ThreeWithPairs(x)) => {}
-    //         Some(CardStyle::Threes(x)) => {}
-    //         Some(CardStyle::Single(x)) => {}
-    //         None => {}
-    //     }
-    // }
+    pub fn cmp(round: Option<CardStyle>, cs: Box<Vec<Card>>) -> Option<CardStyle> {
+        match round {
+            Some(CardStyle::Boom(x)) => {
+                let mut y = boom::Bomb([Card::default(); 4]);
+                let e = y.suit(&cs);
+                if e.is_none() && y > x {
+                    return Some(CardStyle::Boom(y));
+                }
+            }
+            Some(CardStyle::Chain(x)) => {
+                let mut y = chain::Chain(vec![]);
+                let e = y.suit(&cs);
+                if e.is_none() {
+                    if y > x {
+                        return Some(CardStyle::Chain(y));
+                    } else {
+                        return None;
+                    }
+                }
+            }
+            Some(CardStyle::Pairs(x)) => {
+                let mut y = pairs::Pairs(vec![]);
+                let e = y.suit(&cs);
+                if e.is_none() {
+                    if y > x {
+                        return Some(CardStyle::Pairs(y));
+                    } else {
+                        return None;
+                    }
+                }
+            }
+            Some(CardStyle::ThreeWithOnes(x)) => {
+                let mut y = three_with_ones::ThreeWithOnes(vec![]);
+                let e = y.suit(&cs);
+                if e.is_none() {
+                    if y > x {
+                        return Some(CardStyle::ThreeWithOnes(y));
+                    } else {
+                        return None;
+                    }
+                }
+            }
+            Some(CardStyle::ThreeWithPairs(x)) => {
+                let mut y = three_with_pairs::ThreeWithPairs(vec![]);
+                let e = y.suit(&cs);
+                if e.is_none() {
+                    if y > x {
+                        return Some(CardStyle::ThreeWithPairs(y));
+                    } else {
+                        return None;
+                    }
+                }
+            }
+            Some(CardStyle::Threes(x)) => {
+                let mut y = threes::Threes(vec![]);
+                let e = y.suit(&cs);
+                if e.is_none() {
+                    if y > x {
+                        return Some(CardStyle::Threes(y));
+                    } else {
+                        return None;
+                    }
+                }
+            }
+            Some(CardStyle::Single(x)) => {
+                let mut y = single::Single(Card::default());
+                let e = y.suit(&cs);
+                if e.is_none() {
+                    if y.0 > x.0 {
+                        return Some(CardStyle::Single(y));
+                    } else {
+                        return None;
+                    }
+                }
+            }
+            None => {
+                return CardStyle::unwrap(&cs);
+            }
+        }
+
+        {
+            let mut y = boom::Bomb([Card::default(); 4]);
+            let e = y.suit(&cs);
+            if e.is_none() {
+                return Some(CardStyle::Boom(y));
+            }
+        }
+
+        None
+    }
 
     pub fn unwrap(cs: &Vec<Card>) -> Option<CardStyle> {
         let tss: Vec<ToStyle> = vec![

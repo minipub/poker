@@ -6,11 +6,11 @@ use crate::lib::style::iface::*;
 use crate::lib::style::CardStyle;
 
 #[derive(Debug)]
-pub struct Chain(pub Box<Vec<Card>>);
+pub struct Chain(pub Vec<Card>);
 
 impl Chain {
     pub fn to_style(cs: &Vec<Card>) -> Option<CardStyle> {
-        let mut s = Chain(Box::new(vec![]));
+        let mut s = Chain(vec![]);
         let e = s.suit(&cs);
         if e == None {
             return Some(CardStyle::Chain(s));
@@ -43,7 +43,7 @@ impl Suit for Chain {
             m = xp + 1;
         }
 
-        self.0 = Box::new(v);
+        self.0 = v;
         None
     }
 }
