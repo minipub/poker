@@ -66,9 +66,9 @@ pub fn test() {
 pub fn manage() {
     let mut s = Session::new(1001, 1, SessionType::Three);
 
-    let mut p1 = Player::new(1, "john");
-    let mut p2 = Player::new(2, "mike");
-    let mut p3 = Player::new(3, "alex");
+    let mut p1 = Player::new(100, "john");
+    let mut p2 = Player::new(101, "mike");
+    let mut p3 = Player::new(102, "alex");
 
     s.push_player(p1);
     s.push_player(p2);
@@ -80,4 +80,6 @@ pub fn manage() {
     }
 
     println!("session: {:?}", s);
+
+    // s.play_round(p3);
 }

@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 use std::cmp::{PartialEq, PartialOrd};
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use crate::lib::card::*;
 use crate::lib::style::iface::*;
@@ -14,7 +15,7 @@ impl Threes {
         let mut s = Threes(vec![]);
         let e = s.suit(&cs);
         if e == None {
-            return Some(CardStyle::Threes(s));
+            return Some(CardStyle::Threes(Rc::new(s)));
         }
         None
     }

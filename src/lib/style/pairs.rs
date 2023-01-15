@@ -1,5 +1,6 @@
 use std::cmp::Ordering;
 use std::cmp::{PartialEq, PartialOrd};
+use std::rc::Rc;
 
 use crate::lib::card::*;
 use crate::lib::style::iface::*;
@@ -13,7 +14,7 @@ impl Pairs {
         let mut s = Pairs(vec![]);
         let e = s.suit(&cs);
         if e == None {
-            return Some(CardStyle::Pairs(s));
+            return Some(CardStyle::Pairs(Rc::new(s)));
         }
         None
     }

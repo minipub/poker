@@ -7,36 +7,38 @@ pub mod three_with_ones;
 pub mod three_with_pairs;
 pub mod threes;
 
+use std::rc::Rc;
+
 use crate::lib::card::*;
 use crate::lib::style::iface::*;
 
 #[derive(Debug)]
 pub enum CardStyle {
-    Boom(boom::Bomb),
-    Chain(chain::Chain),
-    Pairs(pairs::Pairs),
-    ThreeWithOnes(three_with_ones::ThreeWithOnes),
-    ThreeWithPairs(three_with_pairs::ThreeWithPairs),
-    Threes(threes::Threes),
-    Single(single::Single),
+    Boom(Rc<boom::Bomb>),
+    Chain(Rc<chain::Chain>),
+    Pairs(Rc<pairs::Pairs>),
+    ThreeWithOnes(Rc<three_with_ones::ThreeWithOnes>),
+    ThreeWithPairs(Rc<three_with_pairs::ThreeWithPairs>),
+    Threes(Rc<threes::Threes>),
+    Single(Rc<single::Single>),
 }
 
 impl CardStyle {
-    pub fn cmp(round: Option<CardStyle>, cs: Box<Vec<Card>>) -> Option<CardStyle> {
+    pub fn cmp(round: &Option<CardStyle>, cs: &Vec<Card>) -> Option<CardStyle> {
         match round {
             Some(CardStyle::Boom(x)) => {
                 let mut y = boom::Bomb([Card::default(); 4]);
                 let e = y.suit(&cs);
-                if e.is_none() && y > x {
-                    return Some(CardStyle::Boom(y));
+                if e.is_none() && y > *(x.as_ref()) {
+                    return Some(CardStyle::Boom(Rc::new(y)));
                 }
             }
             Some(CardStyle::Chain(x)) => {
                 let mut y = chain::Chain(vec![]);
                 let e = y.suit(&cs);
                 if e.is_none() {
-                    if y > x {
-                        return Some(CardStyle::Chain(y));
+                    if y > *(x.as_ref()) {
+                        return Some(CardStyle::Chain(Rc::new(y)));
                     } else {
                         return None;
                     }
@@ -46,8 +48,8 @@ impl CardStyle {
                 let mut y = pairs::Pairs(vec![]);
                 let e = y.suit(&cs);
                 if e.is_none() {
-                    if y > x {
-                        return Some(CardStyle::Pairs(y));
+                    if y > *(x.as_ref()) {
+                        return Some(CardStyle::Pairs(Rc::new(y)));
                     } else {
                         return None;
                     }
@@ -57,8 +59,8 @@ impl CardStyle {
                 let mut y = three_with_ones::ThreeWithOnes(vec![]);
                 let e = y.suit(&cs);
                 if e.is_none() {
-                    if y > x {
-                        return Some(CardStyle::ThreeWithOnes(y));
+                    if y > *(x.as_ref()) {
+                        return Some(CardStyle::ThreeWithOnes(Rc::new(y)));
                     } else {
                         return None;
                     }
@@ -68,8 +70,8 @@ impl CardStyle {
                 let mut y = three_with_pairs::ThreeWithPairs(vec![]);
                 let e = y.suit(&cs);
                 if e.is_none() {
-                    if y > x {
-                        return Some(CardStyle::ThreeWithPairs(y));
+                    if y > *(x.as_ref()) {
+                        return Some(CardStyle::ThreeWithPairs(Rc::new(y)));
                     } else {
                         return None;
                     }
@@ -79,8 +81,8 @@ impl CardStyle {
                 let mut y = threes::Threes(vec![]);
                 let e = y.suit(&cs);
                 if e.is_none() {
-                    if y > x {
-                        return Some(CardStyle::Threes(y));
+                    if y > *(x.as_ref()) {
+                        return Some(CardStyle::Threes(Rc::new(y)));
                     } else {
                         return None;
                     }
@@ -91,7 +93,7 @@ impl CardStyle {
                 let e = y.suit(&cs);
                 if e.is_none() {
                     if y.0 > x.0 {
-                        return Some(CardStyle::Single(y));
+                        return Some(CardStyle::Single(Rc::new(y)));
                     } else {
                         return None;
                     }
@@ -106,7 +108,7 @@ impl CardStyle {
             let mut y = boom::Bomb([Card::default(); 4]);
             let e = y.suit(&cs);
             if e.is_none() {
-                return Some(CardStyle::Boom(y));
+                return Some(CardStyle::Boom(Rc::new(y)));
             }
         }
 
@@ -148,7 +150,7 @@ mod tests {
         let t = Card::new(Point::Ten(0), Color::Spades);
 
         let a = match CardStyle::unwrap(&vec![t]) {
-            Some(CardStyle::Single(single::Single(x))) => x.unwrap_point(),
+            Some(CardStyle::Single(x)) => x.0.unwrap_point(),
             _ => {
                 panic!("not single");
             }
@@ -166,7 +168,7 @@ mod tests {
         let t5 = Card::new(Point::Ace(0), Color::Hearts);
 
         let a = match CardStyle::unwrap(&vec![t1, t2, t3, t4, t5]) {
-            Some(CardStyle::Chain(chain::Chain(x))) => x,
+            Some(CardStyle::Chain(x)) => x.as_ref().0.clone(),
             _ => {
                 panic!("not chain");
             }

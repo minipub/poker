@@ -1,5 +1,6 @@
 use std::cmp::Ordering;
 use std::cmp::{PartialEq, PartialOrd};
+use std::rc::Rc;
 
 use crate::lib::card::*;
 use crate::lib::style::iface::Suit;
@@ -13,7 +14,7 @@ impl Bomb {
         let mut s = Bomb([Card::default(); 4]);
         let e = s.suit(&cs);
         if e == None {
-            return Some(CardStyle::Boom(s));
+            return Some(CardStyle::Boom(Rc::new(s)));
         }
         None
     }

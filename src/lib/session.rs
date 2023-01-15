@@ -1,5 +1,6 @@
 use std::cmp::PartialEq;
 
+use crate::lib::card::Card;
 use crate::lib::deck;
 use crate::lib::judger;
 use crate::lib::player;
@@ -16,8 +17,14 @@ pub struct Session<'a> {
     id: u64,
     judger: judger::Judger,
     players: Vec<player::Player<'a>>,
-    round: Option<style::CardStyle>,
+    round: Round<'a>,
     stype: SessionType,
+}
+
+#[derive(Debug)]
+pub struct Round<'a> {
+    player: Option<player::Player<'a>>,
+    style: Option<style::CardStyle>,
 }
 
 impl<'a> Session<'a> {
@@ -38,7 +45,10 @@ impl<'a> Session<'a> {
             id,
             judger: j,
             players: vec![],
-            round: None,
+            round: Round {
+                player: None,
+                style: None,
+            },
             stype,
         }
     }
@@ -73,5 +83,9 @@ impl<'a> Session<'a> {
     pub fn set_lord(&mut self, i: usize) {
         let p = self.players.get_mut(i).unwrap();
         self.judger.deal_lord(p);
+    }
+
+    pub fn play_round(&mut self, p: player::Player<'a>, cs: Vec<Card>) {
+        style::CardStyle::cmp(&self.round.style, &cs);
     }
 }

@@ -1,6 +1,7 @@
 use crate::lib::card::*;
 use crate::lib::style::iface::*;
 use crate::lib::style::CardStyle;
+use std::rc::Rc;
 
 #[derive(Debug)]
 pub struct Single(pub Card);
@@ -10,7 +11,7 @@ impl Single {
         let mut s = Single(Card::default());
         let e = s.suit(&cs);
         if e == None {
-            return Some(CardStyle::Single(s));
+            return Some(CardStyle::Single(Rc::new(s)));
         }
         None
     }

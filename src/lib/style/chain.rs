@@ -1,5 +1,6 @@
 use std::cmp::Ordering;
 use std::cmp::{PartialEq, PartialOrd};
+use std::rc::Rc;
 
 use crate::lib::card::*;
 use crate::lib::style::iface::*;
@@ -13,7 +14,7 @@ impl Chain {
         let mut s = Chain(vec![]);
         let e = s.suit(&cs);
         if e == None {
-            return Some(CardStyle::Chain(s));
+            return Some(CardStyle::Chain(Rc::new(s)));
         }
         None
     }

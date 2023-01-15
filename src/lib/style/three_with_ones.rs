@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 use std::cmp::{PartialEq, PartialOrd};
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use crate::lib::card::*;
 use crate::lib::style::iface::*;
@@ -14,7 +15,7 @@ impl ThreeWithOnes {
         let mut s = ThreeWithOnes(vec![]);
         let e = s.suit(&cs);
         if e == None {
-            return Some(CardStyle::ThreeWithOnes(s));
+            return Some(CardStyle::ThreeWithOnes(Rc::new(s)));
         }
         None
     }
