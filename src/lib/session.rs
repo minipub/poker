@@ -76,8 +76,11 @@ impl<'a> Session<'a> {
 
             // self.judger.deal([&mut p1, &mut p2, &mut p3]);
             self.judger.deal(ps);
+
+            true
+        } else {
+            false
         }
-        false
     }
 
     pub fn set_lord(&mut self, i: usize) {
@@ -85,7 +88,50 @@ impl<'a> Session<'a> {
         self.judger.deal_lord(p);
     }
 
-    pub fn play_round(&mut self, p: player::Player<'a>, cs: Vec<Card>) {
-        style::CardStyle::cmp(&self.round.style, &cs);
+    pub fn play_round(&mut self, p: player::Player<'a>, cs: &Vec<Card>) {
+        let now_cs = style::CardStyle::cmp(&self.round.style, &cs);
+        if now_cs.is_none() {
+            return;
+        }
+
+        self.round.style = now_cs;
+        self.round.player = Some(p);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lib::player::Player;
+
+    #[test]
+    fn test_session() {
+        let mut s = Session::new(1001, 1, SessionType::Three);
+
+        let mut p1 = Player::new(100, "john");
+        let mut p2 = Player::new(101, "mike");
+        let mut p3 = Player::new(102, "alex");
+
+        s.push_player(p1);
+        s.push_player(p2);
+        s.push_player(p3);
+
+        let started = s.begin();
+
+        // each person has 17 cards
+        for p in s.players.iter() {
+            assert_eq!(17, p.cards_count());
+        }
+
+        assert_eq!(true, started);
+
+        if started {
+            s.set_lord(2);
+        }
+
+        println!("session: {:?}", s);
+
+        let lord = s.players.get_mut(2).unwrap();
+        assert_eq!(20, lord.cards_count());
     }
 }
