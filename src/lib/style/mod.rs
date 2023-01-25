@@ -1,6 +1,7 @@
 pub mod boom;
 pub mod chain;
 pub mod fools;
+pub mod four_with_pairs;
 pub mod iface;
 pub mod pairs;
 pub mod single;
