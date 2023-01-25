@@ -1,5 +1,6 @@
 pub mod boom;
 pub mod chain;
+pub mod fools;
 pub mod iface;
 pub mod pairs;
 pub mod single;
@@ -14,6 +15,7 @@ use crate::lib::style::iface::*;
 
 #[derive(Debug)]
 pub enum CardStyle {
+    Fools(Rc<fools::Fools>),
     Boom(Rc<boom::Bomb>),
     Chain(Rc<chain::Chain>),
     Pairs(Rc<pairs::Pairs>),
@@ -26,6 +28,10 @@ pub enum CardStyle {
 impl CardStyle {
     pub fn cmp(round: &Option<CardStyle>, cs: &Vec<Card>) -> Option<CardStyle> {
         match round {
+            Some(CardStyle::Fools(_)) => {
+                return None;
+            }
+
             Some(CardStyle::Boom(x)) => {
                 let mut y = boom::Bomb([Card::default(); 4]);
                 let e = y.suit(&cs);
@@ -33,6 +39,7 @@ impl CardStyle {
                     return Some(CardStyle::Boom(Rc::new(y)));
                 }
             }
+
             Some(CardStyle::Chain(x)) => {
                 let mut y = chain::Chain(vec![]);
                 let e = y.suit(&cs);
@@ -44,6 +51,7 @@ impl CardStyle {
                     }
                 }
             }
+
             Some(CardStyle::Pairs(x)) => {
                 let mut y = pairs::Pairs(vec![]);
                 let e = y.suit(&cs);
@@ -55,6 +63,7 @@ impl CardStyle {
                     }
                 }
             }
+
             Some(CardStyle::ThreeWithOnes(x)) => {
                 let mut y = three_with_ones::ThreeWithOnes(vec![]);
                 let e = y.suit(&cs);
@@ -66,6 +75,7 @@ impl CardStyle {
                     }
                 }
             }
+
             Some(CardStyle::ThreeWithPairs(x)) => {
                 let mut y = three_with_pairs::ThreeWithPairs(vec![]);
                 let e = y.suit(&cs);
@@ -77,6 +87,7 @@ impl CardStyle {
                     }
                 }
             }
+
             Some(CardStyle::Threes(x)) => {
                 let mut y = threes::Threes(vec![]);
                 let e = y.suit(&cs);
@@ -88,6 +99,7 @@ impl CardStyle {
                     }
                 }
             }
+
             Some(CardStyle::Single(x)) => {
                 let mut y = single::Single(Card::default());
                 let e = y.suit(&cs);
@@ -99,6 +111,7 @@ impl CardStyle {
                     }
                 }
             }
+
             None => {
                 return CardStyle::unwrap(&cs);
             }
