@@ -117,6 +117,10 @@ impl<'a> Session<'a> {
         self.round.style = now_cs;
         self.round.player = Some(p);
 
+        // for c in cs {
+        //     self.players
+        // }
+
         return;
     }
 }

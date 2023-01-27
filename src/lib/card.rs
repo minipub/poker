@@ -12,27 +12,8 @@ pub struct Card {
 
 impl Card {
     pub fn new(p: Point, c: Color) -> Card {
-        let tp = match p {
-            Point::GoldenJoker(_) => Point::GoldenJoker(100),
-            Point::SilverJoker(_) => Point::SilverJoker(90),
-            Point::BigTwo(_) => Point::BigTwo(20),
-            Point::Ace(_) => Point::Ace(14),
-            Point::King(_) => Point::King(13),
-            Point::Queen(_) => Point::Queen(12),
-            Point::Jack(_) => Point::Jack(11),
-            Point::Ten(_) => Point::Ten(10),
-            Point::Nine(_) => Point::Nine(9),
-            Point::Eight(_) => Point::Eight(8),
-            Point::Seven(_) => Point::Seven(7),
-            Point::Six(_) => Point::Six(6),
-            Point::Five(_) => Point::Five(5),
-            Point::Four(_) => Point::Four(4),
-            Point::Three(_) => Point::Three(3),
-            Point::None => Point::None,
-        };
-
         Card {
-            point: tp,
+            point: Point::new(p),
             color: c,
         }
     }
@@ -66,10 +47,12 @@ impl Card {
     }
 }
 
+// compare Card = compare Point and Color both
 impl PartialEq for Card {
     fn eq(&self, other: &Self) -> bool {
-        self.unwrap_point() == other.unwrap_point()
+        self.point.unwrap_point() == other.point.unwrap_point() && self.color == other.color
     }
+
     fn ne(&self, other: &Self) -> bool {
         !self.eq(other)
     }
@@ -77,7 +60,9 @@ impl PartialEq for Card {
 
 impl PartialOrd for Card {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        if self.gt(other) {
+        if self.eq(other) {
+            Some(Ordering::Equal)
+        } else if self.gt(other) {
             Some(Ordering::Greater)
         } else if self.lt(other) {
             Some(Ordering::Less)
@@ -87,18 +72,32 @@ impl PartialOrd for Card {
     }
 
     fn gt(&self, other: &Self) -> bool {
-        self.unwrap_point() > other.unwrap_point()
+        let x = self.point.unwrap_point();
+        let y = other.point.unwrap_point();
+        if x > y {
+            true
+        } else if x == y {
+            self.color > other.color
+        } else {
+            false
+        }
+    }
+
+    fn lt(&self, other: &Self) -> bool {
+        if self.point < other.point {
+            true
+        } else if self.point == other.point {
+            self.color < other.color
+        } else {
+            false
+        }
     }
 
     fn ge(&self, other: &Self) -> bool {
-        self.unwrap_point() >= other.unwrap_point()
+        !self.lt(other)
     }
 
     fn le(&self, other: &Self) -> bool {
         !self.gt(other)
-    }
-
-    fn lt(&self, other: &Self) -> bool {
-        !self.ge(other)
     }
 }

@@ -48,20 +48,6 @@ impl Judger {
         p.set_lord();
     }
 
-    // fn cut(&mut self) {
-    //     let mut rng = rand::thread_rng();
-    //     let x: u8 = rng.gen_range(0..(self.cards.len() as u8));
-
-    //     let mcnt = self.cards.len() / 2;
-    //     let mut i = mcnt;
-    //     while i < self.cards.len() {
-    //         let tmp = self.cards[i];
-    //         self.cards[i] = self.cards[i - mcnt];
-    //         self.cards[i - mcnt] = tmp;
-    //         i += 1;
-    //     }
-    // }
-
     pub fn deal(&mut self, mut ps: Vec<&mut Player>) {
         let mut next = true;
         while next {

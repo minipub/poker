@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
 use crate::lib::card::*;
 
 #[derive(Debug)]
@@ -5,7 +8,7 @@ pub struct Player<'a> {
     id: u8,
     name: &'a str,
     is_lord: bool,
-    cards: Box<Vec<Card>>,
+    cards: Rc<RefCell<Vec<Card>>>,
     seat: i8,
 }
 
@@ -15,7 +18,7 @@ impl<'a> Player<'a> {
             id,
             name,
             is_lord: false,
-            cards: Box::new(vec![]),
+            cards: Rc::new(RefCell::new(vec![])),
             seat: -1,
         }
     }
@@ -25,11 +28,25 @@ impl<'a> Player<'a> {
     }
 
     pub fn push_card(&mut self, t: Card) {
-        self.cards.push(t);
+        // TODO keep the cards in ascending order
+        self.cards.borrow_mut().push(t);
+    }
+
+    pub fn del_card(&mut self, t: Card) {
+        match self
+            .cards
+            .borrow_mut()
+            .binary_search_by(|pb| pb.partial_cmp(&t).unwrap())
+        {
+            Ok(idx) => self.cards.borrow_mut().remove(idx),
+            Err(_) => {
+                return;
+            }
+        };
     }
 
     pub fn cards_count(&self) -> usize {
-        self.cards.len()
+        self.cards.borrow().len()
     }
 
     pub fn set_seat(&mut self, i: usize) {
