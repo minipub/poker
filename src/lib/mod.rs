@@ -7,3 +7,4 @@ pub mod player;
 pub mod point;
 pub mod session;
 pub mod style;
+pub mod util;

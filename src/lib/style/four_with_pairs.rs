@@ -1,15 +1,15 @@
 use std::cmp::Ordering;
 use std::cmp::{PartialEq, PartialOrd};
-use std::collections::HashMap;
 use std::rc::Rc;
 
 use crate::lib::card::Card;
 use crate::lib::style::iface::*;
+use crate::lib::util::card_buckets;
 
 #[derive(Debug)]
-pub struct FourWithPairs<const N: usize>(pub [Card; 4], [[Card; 2]; N]);
+pub struct FourWithPairs(pub [Card; 4], Vec<[Card; 2]>);
 
-impl<const N: usize> Suit for FourWithPairs<N> {
+impl Suit for FourWithPairs {
     type Error = &'static str;
 
     fn suit(&mut self, cs: &Vec<Card>) -> Option<Self::Error> {
@@ -45,42 +45,21 @@ impl<const N: usize> Suit for FourWithPairs<N> {
         }
 
         self.0 = four;
-
-        let mut i = 0;
-        for p in pairs {
-            self.1[i] = p;
-            i += 1;
-        }
+        self.1 = pairs;
 
         None
     }
 }
 
-impl<const N: usize> Layer for FourWithPairs<N> {
-    type Other = FourWithPairs<N>;
+impl Layer for &FourWithPairs {
+    type Other = Self;
 
     fn same_layer(&self, other: Self::Other) -> bool {
         self.1.len() == other.1.len()
     }
 }
 
-fn card_buckets(cs: &Vec<Card>) -> HashMap<u8, Box<Vec<Card>>> {
-    let mut buckets: HashMap<u8, Box<Vec<Card>>> = HashMap::new();
-
-    for x in cs.iter() {
-        let k = x.unwrap_point();
-        if !buckets.contains_key(&k) {
-            buckets.insert(k, Box::new(vec![]));
-        }
-        buckets.get_mut(&k).unwrap().push(*x);
-    }
-
-    println!("buckets: {:?}", buckets);
-
-    buckets
-}
-
-impl<const N: usize> PartialEq for FourWithPairs<N> {
+impl PartialEq for FourWithPairs {
     fn eq(&self, other: &Self) -> bool {
         self.0[0] == other.0[0]
     }
@@ -89,7 +68,7 @@ impl<const N: usize> PartialEq for FourWithPairs<N> {
     }
 }
 
-impl<const N: usize> PartialOrd for FourWithPairs<N> {
+impl PartialOrd for FourWithPairs {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         if self.gt(other) {
             Some(Ordering::Greater)
@@ -133,22 +112,39 @@ mod tests {
             Card::new(Point::Ten(0), Color::Hearts),
             Card::new(Point::Five(0), Color::Hearts),
         ];
-        let mut y = FourWithPairs([Card::default(); 4], [[Card::default(); 2]; 2]);
-        let e = y.suit(&cs);
+        let mut y1 = FourWithPairs([Card::default(); 4], vec![[Card::default(); 2]]);
+        let e = y1.suit(&cs);
         assert_eq!(true, e.is_none());
 
         let cs: Vec<Card> = vec![
             Card::new(Point::Five(0), Color::Spades),
-            Card::new(Point::Ten(0), Color::Spades),
-            Card::new(Point::Ten(0), Color::Plum),
-            Card::new(Point::Ten(0), Color::Square),
-            Card::new(Point::Ten(0), Color::Hearts),
+            Card::new(Point::Nine(0), Color::Spades),
+            Card::new(Point::Nine(0), Color::Plum),
+            Card::new(Point::Nine(0), Color::Square),
+            Card::new(Point::Nine(0), Color::Hearts),
             Card::new(Point::Five(0), Color::Hearts),
             Card::new(Point::Six(0), Color::Hearts),
             Card::new(Point::Six(0), Color::Plum),
         ];
-        let mut y = FourWithPairs([Card::default(); 4], [[Card::default(); 2]; 2]);
-        let e = y.suit(&cs);
+        let mut y2 = FourWithPairs([Card::default(); 4], vec![[Card::default(); 2]]);
+        let e = y2.suit(&cs);
         assert_eq!(true, e.is_none());
+
+        let cs: Vec<Card> = vec![
+            Card::new(Point::Ace(0), Color::Spades),
+            Card::new(Point::Three(0), Color::Spades),
+            Card::new(Point::Seven(0), Color::Hearts),
+            Card::new(Point::Three(0), Color::Plum),
+            Card::new(Point::Ace(0), Color::Hearts),
+            Card::new(Point::Seven(0), Color::Plum),
+            Card::new(Point::Three(0), Color::Square),
+            Card::new(Point::Three(0), Color::Hearts),
+        ];
+        let mut y3 = FourWithPairs([Card::default(); 4], vec![[Card::default(); 2]]);
+        let e = y3.suit(&cs);
+        assert_eq!(true, e.is_none());
+
+        assert_eq!(false, (&y1).same_layer(&y2));
+        assert_eq!(true, (&y3).same_layer(&y2));
     }
 }
