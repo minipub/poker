@@ -102,13 +102,22 @@ impl<'a> Session<'a> {
     }
 
     pub fn play_round(&mut self, p: player::Player<'a>, cs: &Vec<Card>) {
-        let now_cs = style::CardStyle::cmp(&self.round.style, &cs);
+        let now_cs: Option<style::CardStyle>;
+
+        if self.round.style.is_none() {
+            now_cs = style::CardStyle::to_style(&cs);
+        } else {
+            now_cs = self.round.style.as_ref().unwrap().cmp(&cs);
+        }
+
         if now_cs.is_none() {
             return;
         }
 
         self.round.style = now_cs;
         self.round.player = Some(p);
+
+        return;
     }
 }
 

@@ -18,6 +18,8 @@ use crate::lib::style::iface::*;
 #[derive(Debug)]
 pub enum CardStyle {
     Fools(Rc<fools::Fools>),
+    // FourWithPairs(Rc<four_with_pairs::FourWithPairs>),
+    // FourWithTwo(Rc<four_with_two::FourWithTwo>),
     Boom(Rc<boom::Bomb>),
     Chain(Rc<chain::Chain>),
     Pairs(Rc<pairs::Pairs>),
@@ -28,13 +30,13 @@ pub enum CardStyle {
 }
 
 impl CardStyle {
-    pub fn cmp(round: &Option<CardStyle>, cs: &Vec<Card>) -> Option<CardStyle> {
-        match round {
-            Some(CardStyle::Fools(_)) => {
+    pub fn cmp(&self, cs: &Vec<Card>) -> Option<CardStyle> {
+        match self {
+            CardStyle::Fools(_) => {
                 return None;
             }
 
-            Some(CardStyle::Boom(x)) => {
+            CardStyle::Boom(x) => {
                 let mut y = boom::Bomb([Card::default(); 4]);
                 let e = y.suit(&cs);
                 if e.is_none() && y > *(x.as_ref()) {
@@ -42,7 +44,7 @@ impl CardStyle {
                 }
             }
 
-            Some(CardStyle::Chain(x)) => {
+            CardStyle::Chain(x) => {
                 let mut y = chain::Chain(vec![]);
                 let e = y.suit(&cs);
                 if e.is_none() {
@@ -54,7 +56,7 @@ impl CardStyle {
                 }
             }
 
-            Some(CardStyle::Pairs(x)) => {
+            CardStyle::Pairs(x) => {
                 let mut y = pairs::Pairs(vec![]);
                 let e = y.suit(&cs);
                 if e.is_none() {
@@ -66,7 +68,7 @@ impl CardStyle {
                 }
             }
 
-            Some(CardStyle::ThreeWithOnes(x)) => {
+            CardStyle::ThreeWithOnes(x) => {
                 let mut y = three_with_ones::ThreeWithOnes(vec![]);
                 let e = y.suit(&cs);
                 if e.is_none() {
@@ -78,7 +80,7 @@ impl CardStyle {
                 }
             }
 
-            Some(CardStyle::ThreeWithPairs(x)) => {
+            CardStyle::ThreeWithPairs(x) => {
                 let mut y = three_with_pairs::ThreeWithPairs(vec![]);
                 let e = y.suit(&cs);
                 if e.is_none() {
@@ -90,7 +92,7 @@ impl CardStyle {
                 }
             }
 
-            Some(CardStyle::Threes(x)) => {
+            CardStyle::Threes(x) => {
                 let mut y = threes::Threes(vec![]);
                 let e = y.suit(&cs);
                 if e.is_none() {
@@ -102,7 +104,7 @@ impl CardStyle {
                 }
             }
 
-            Some(CardStyle::Single(x)) => {
+            CardStyle::Single(x) => {
                 let mut y = single::Single(Card::default());
                 let e = y.suit(&cs);
                 if e.is_none() {
@@ -112,10 +114,6 @@ impl CardStyle {
                         return None;
                     }
                 }
-            }
-
-            None => {
-                return CardStyle::unwrap(&cs);
             }
         }
 
@@ -130,7 +128,7 @@ impl CardStyle {
         None
     }
 
-    pub fn unwrap(cs: &Vec<Card>) -> Option<CardStyle> {
+    pub fn to_style(cs: &Vec<Card>) -> Option<CardStyle> {
         let tss: Vec<ToStyle> = vec![
             boom::Bomb::to_style,
             chain::Chain::to_style,
@@ -164,7 +162,7 @@ mod tests {
     fn test_single() {
         let t = Card::new(Point::Ten(0), Color::Spades);
 
-        let a = match CardStyle::unwrap(&vec![t]) {
+        let a = match CardStyle::to_style(&vec![t]) {
             Some(CardStyle::Single(x)) => x.0.unwrap_point(),
             _ => {
                 panic!("not single");
@@ -182,7 +180,7 @@ mod tests {
         let t4 = Card::new(Point::Queen(0), Color::Square);
         let t5 = Card::new(Point::Ace(0), Color::Hearts);
 
-        let a = match CardStyle::unwrap(&vec![t1, t2, t3, t4, t5]) {
+        let a = match CardStyle::to_style(&vec![t1, t2, t3, t4, t5]) {
             Some(CardStyle::Chain(x)) => x.as_ref().0.clone(),
             _ => {
                 panic!("not chain");
