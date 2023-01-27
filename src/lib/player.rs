@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::lib::card::*;
+use crate::lib::card::Card;
 
 #[derive(Debug)]
 pub struct Player<'a> {
@@ -28,18 +28,26 @@ impl<'a> Player<'a> {
     }
 
     pub fn push_card(&mut self, t: Card) {
-        // TODO keep the cards in ascending order
-        self.cards.borrow_mut().push(t);
+        // keep the cards in ascending order
+        let mut cm = self.cards.borrow_mut();
+        match cm.binary_search_by(|pb| pb.partial_cmp(&t).unwrap()) {
+            Ok(idx) => {
+                eprintln!("push_card err: shouldn't find element idx {:?}", idx);
+                return;
+            }
+            Err(idx) => {
+                cm.insert(idx, t);
+                return;
+            }
+        };
     }
 
     pub fn del_card(&mut self, t: Card) {
-        match self
-            .cards
-            .borrow_mut()
-            .binary_search_by(|pb| pb.partial_cmp(&t).unwrap())
-        {
-            Ok(idx) => self.cards.borrow_mut().remove(idx),
-            Err(_) => {
+        let mut cm = self.cards.borrow_mut();
+        match cm.binary_search_by(|pb| pb.partial_cmp(&t).unwrap()) {
+            Ok(idx) => cm.remove(idx),
+            Err(idx) => {
+                eprintln!("del_card err: can't find element but before idx {:?}", idx);
                 return;
             }
         };
@@ -54,4 +62,67 @@ impl<'a> Player<'a> {
     }
 
     pub fn play(cs: Box<Vec<Card>>) {}
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lib::color::Color;
+    use crate::lib::point::Point;
+
+    #[test]
+    fn test_push_card() {
+        let mut p1 = Player::new(1, "john");
+        let cs: Vec<Card> = vec![
+            Card::new(Point::Jack(0), Color::Plum),
+            Card::new(Point::Queen(0), Color::Spades),
+            Card::new(Point::Eight(0), Color::Square),
+            Card::new(Point::Three(0), Color::Hearts),
+            Card::new(Point::Four(0), Color::Square),
+            Card::new(Point::Seven(0), Color::Square),
+            Card::new(Point::GoldenJoker(0), Color::None),
+            Card::new(Point::Seven(0), Color::Spades),
+            Card::new(Point::Seven(0), Color::Plum),
+            Card::new(Point::Five(0), Color::Hearts),
+            Card::new(Point::SilverJoker(0), Color::None),
+        ];
+        for c in &cs {
+            p1.push_card(*c);
+        }
+        println!("p1: {:?}", p1);
+        assert_eq!(cs[3], *(p1.cards.borrow().get(0).unwrap()));
+        assert_eq!(cs[7], *(p1.cards.borrow().get(3).unwrap()));
+        assert_eq!(cs[8], *(p1.cards.borrow().get(4).unwrap()));
+        assert_eq!(cs[5], *(p1.cards.borrow().get(5).unwrap()));
+        assert_eq!(cs[6], *(p1.cards.borrow().get(10).unwrap()));
+    }
+
+    #[test]
+    fn test_del_card() {
+        let mut p1 = Player::new(1, "john");
+        let cs: Vec<Card> = vec![
+            Card::new(Point::Jack(0), Color::Plum),
+            Card::new(Point::Queen(0), Color::Spades),
+            Card::new(Point::Eight(0), Color::Square),
+            Card::new(Point::Three(0), Color::Hearts),
+            Card::new(Point::Four(0), Color::Square),
+            Card::new(Point::Seven(0), Color::Square),
+            Card::new(Point::GoldenJoker(0), Color::None),
+            Card::new(Point::Seven(0), Color::Spades),
+            Card::new(Point::Seven(0), Color::Plum),
+            Card::new(Point::Five(0), Color::Hearts),
+            Card::new(Point::SilverJoker(0), Color::None),
+        ];
+        for c in &cs {
+            p1.push_card(*c);
+        }
+
+        p1.del_card(Card::new(Point::Five(0), Color::Hearts));
+        assert_eq!(cs[7], *(p1.cards.borrow().get(2).unwrap()));
+
+        // println!("p1: {:?}", p1);
+        // println!("cs: {:?}", cs);
+        p1.del_card(Card::new(Point::Seven(0), Color::Plum));
+        assert_eq!(cs[2], *(p1.cards.borrow().get(4).unwrap()));
+    }
 }
