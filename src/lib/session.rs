@@ -1,4 +1,6 @@
+use std::cell::RefCell;
 use std::cmp::PartialEq;
+use std::rc::Rc;
 
 use crate::lib::card::Card;
 use crate::lib::deck;
@@ -17,7 +19,7 @@ pub enum SessionType {
 pub struct Session<'a> {
     id: u64,
     judger: judger::Judger,
-    players: Vec<player::Player<'a>>,
+    players: Vec<Rc<RefCell<player::Player<'a>>>>,
     round: Round<'a>,
     stype: SessionType,
 }
@@ -66,9 +68,9 @@ impl<'a> Session<'a> {
         })
     }
 
-    pub fn push_player(&mut self, mut p: player::Player<'a>) {
+    pub fn push_player(&mut self, p: Rc<RefCell<player::Player<'a>>>) {
         let seat = self.players.len();
-        p.set_seat(seat);
+        p.borrow_mut().set_seat(seat);
         self.players.push(p);
     }
 
@@ -85,20 +87,20 @@ impl<'a> Session<'a> {
             return false;
         }
 
-        let mut ps: Vec<&mut player::Player> = vec![];
+        let mut ps: Vec<Rc<RefCell<player::Player>>> = vec![];
 
-        for i in self.players.iter_mut() {
-            ps.push(i);
+        for i in &self.players {
+            ps.push(i.clone());
         }
 
-        self.judger.deal(ps);
+        self.judger.deal(&ps);
 
         true
     }
 
     pub fn set_lord(&mut self, i: usize) {
-        let p = self.players.get_mut(i).unwrap();
-        self.judger.deal_lord(p);
+        let p = self.players.get(i).unwrap();
+        self.judger.deal_lord(p.clone());
     }
 
     pub fn play_round(&mut self, p: player::Player<'a>, cs: &Vec<Card>) {
@@ -118,7 +120,7 @@ impl<'a> Session<'a> {
         self.round.player = Some(p);
 
         // for c in cs {
-        //     self.players
+        //     p.del_card(&c);
         // }
 
         return;
@@ -141,9 +143,9 @@ mod tests {
             }
         };
 
-        let mut p1 = Player::new(100, "john");
-        let mut p2 = Player::new(101, "mike");
-        let mut p3 = Player::new(102, "alex");
+        let p1 = Rc::new(RefCell::new(Player::new(100, "john")));
+        let p2 = Rc::new(RefCell::new(Player::new(101, "mike")));
+        let p3 = Rc::new(RefCell::new(Player::new(102, "alex")));
 
         s.push_player(p1);
         s.push_player(p2);
@@ -153,7 +155,7 @@ mod tests {
 
         // each person has 17 cards
         for p in s.players.iter() {
-            assert_eq!(17, p.cards_count());
+            assert_eq!(17, p.borrow().cards_count());
         }
 
         assert_eq!(true, started);
@@ -166,7 +168,7 @@ mod tests {
 
         // lord has 20 cards
         let lord = s.players.get_mut(2).unwrap();
-        assert_eq!(20, lord.cards_count());
+        assert_eq!(20, lord.borrow().cards_count());
     }
 
     #[test]
@@ -180,10 +182,12 @@ mod tests {
             }
         };
 
-        let mut p1 = Player::new(100, "john");
-        let mut p2 = Player::new(101, "mike");
-        let mut p3 = Player::new(102, "alex");
-        let mut p4 = Player::new(103, "bobb");
+        // println!("session hhh: {:?}", s);
+
+        let p1 = Rc::new(RefCell::new(Player::new(100, "john")));
+        let p2 = Rc::new(RefCell::new(Player::new(101, "mike")));
+        let p3 = Rc::new(RefCell::new(Player::new(102, "alex")));
+        let p4 = Rc::new(RefCell::new(Player::new(103, "bobb")));
 
         s.push_player(p1);
         s.push_player(p2);
@@ -194,7 +198,7 @@ mod tests {
 
         // each person has 25 cards
         for p in s.players.iter() {
-            assert_eq!(25, p.cards_count());
+            assert_eq!(25, p.borrow().cards_count());
         }
 
         assert_eq!(true, started);
@@ -207,7 +211,7 @@ mod tests {
 
         // lord has 33 cards
         let lord = s.players.get_mut(1).unwrap();
-        assert_eq!(33, lord.cards_count());
+        assert_eq!(33, lord.borrow().cards_count());
     }
 
     #[test]

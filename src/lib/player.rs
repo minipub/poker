@@ -31,8 +31,13 @@ impl<'a> Player<'a> {
         // keep the cards in ascending order
         let mut cm = self.cards.borrow_mut();
         match cm.binary_search_by(|pb| pb.partial_cmp(&t).unwrap()) {
+            // TODO two deck of cards need to be handled
+            // two cards would be equal in two deck of cards
             Ok(idx) => {
-                eprintln!("push_card err: shouldn't find element idx {:?}", idx);
+                eprintln!(
+                    "push_card err: shouldn't find element idx {:?}, now_cards: {:?}, c: {:?}",
+                    idx, cm, t,
+                );
                 return;
             }
             Err(idx) => {
@@ -42,9 +47,9 @@ impl<'a> Player<'a> {
         };
     }
 
-    pub fn del_card(&mut self, t: Card) {
+    pub fn del_card(&mut self, t: &Card) {
         let mut cm = self.cards.borrow_mut();
-        match cm.binary_search_by(|pb| pb.partial_cmp(&t).unwrap()) {
+        match cm.binary_search_by(|pb| pb.partial_cmp(t).unwrap()) {
             Ok(idx) => cm.remove(idx),
             Err(idx) => {
                 eprintln!("del_card err: can't find element but before idx {:?}", idx);
@@ -117,12 +122,12 @@ mod tests {
             p1.push_card(*c);
         }
 
-        p1.del_card(Card::new(Point::Five(0), Color::Hearts));
+        p1.del_card(&Card::new(Point::Five(0), Color::Hearts));
         assert_eq!(cs[7], *(p1.cards.borrow().get(2).unwrap()));
 
         // println!("p1: {:?}", p1);
         // println!("cs: {:?}", cs);
-        p1.del_card(Card::new(Point::Seven(0), Color::Plum));
+        p1.del_card(&Card::new(Point::Seven(0), Color::Plum));
         assert_eq!(cs[2], *(p1.cards.borrow().get(4).unwrap()));
     }
 }

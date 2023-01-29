@@ -1,4 +1,6 @@
 use rand::prelude::*;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 use crate::lib::card::*;
 use crate::lib::player::*;
@@ -34,33 +36,33 @@ impl Judger {
         }
     }
 
-    pub fn deal_lord(&mut self, p: &mut Player) {
+    pub fn deal_lord(&mut self, p: Rc<RefCell<Player>>) {
         let mut next = true;
         while next {
             next = match self.lords.pop() {
                 Some(t) => {
-                    p.push_card(t);
+                    p.borrow_mut().push_card(t);
                     true
                 }
                 None => false,
             }
         }
-        p.set_lord();
+        p.borrow_mut().set_lord();
     }
 
-    pub fn deal(&mut self, mut ps: Vec<&mut Player>) {
+    pub fn deal(&mut self, ps: &Vec<Rc<RefCell<Player>>>) {
         let mut next = true;
         while next {
-            for p in ps.iter_mut() {
-                next = self.deal_one_card(p);
+            for p in ps {
+                next = self.deal_one_card(p.clone());
             }
         }
     }
 
-    pub fn deal_one_card(&mut self, p: &mut Player) -> bool {
+    pub fn deal_one_card(&mut self, p: Rc<RefCell<Player>>) -> bool {
         match self.cards.pop() {
             Some(t) => {
-                p.push_card(t);
+                p.borrow_mut().push_card(t);
                 true
             }
             None => false,
