@@ -2,6 +2,9 @@ use crate::lib::card::*;
 use crate::lib::color::*;
 use crate::lib::point::*;
 
+pub const DECK_ONE: u8 = 1;
+pub const DECK_TWO: u8 = 2;
+
 /// Deck of Cards
 #[derive(Debug)]
 pub struct Deck {}

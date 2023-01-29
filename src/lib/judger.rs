@@ -3,18 +3,21 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::lib::card::*;
+use crate::lib::deck::{DECK_ONE, DECK_TWO};
 use crate::lib::player::*;
 
 #[derive(Debug)]
 pub struct Judger {
+    deck_num: u8,
     cards: Box<Vec<Card>>,
     lords: Box<Vec<Card>>,
 }
 
 impl Judger {
-    pub fn new(vs: Box<Vec<Card>>) -> Judger {
+    pub fn new(deck_num: u8, cards: Box<Vec<Card>>) -> Judger {
         Judger {
-            cards: vs,
+            deck_num,
+            cards,
             lords: Box::new(vec![]),
         }
     }
@@ -37,35 +40,44 @@ impl Judger {
     }
 
     pub fn deal_lord(&mut self, p: Rc<RefCell<Player>>) {
+        let mut push_card = Player::push_card_func(p.clone(), self.deck_num == DECK_ONE);
         let mut next = true;
+
         while next {
             next = match self.lords.pop() {
                 Some(t) => {
-                    p.borrow_mut().push_card(t);
+                    push_card(t);
                     true
                 }
                 None => false,
             }
         }
+
         p.borrow_mut().set_lord();
     }
 
     pub fn deal(&mut self, ps: &Vec<Rc<RefCell<Player>>>) {
+        let is_diff_push = self.deck_num == DECK_ONE;
         let mut next = true;
-        while next {
-            for p in ps {
-                next = self.deal_one_card(p.clone());
-            }
-        }
-    }
 
-    pub fn deal_one_card(&mut self, p: Rc<RefCell<Player>>) -> bool {
-        match self.cards.pop() {
-            Some(t) => {
-                p.borrow_mut().push_card(t);
-                true
+        let mut pfs: Vec<Box<dyn FnMut(Card)>> = vec![];
+        for p in ps {
+            let push_card = Player::push_card_func(p.clone(), is_diff_push);
+            pfs.push(push_card);
+        }
+
+        while next {
+            let mut i: usize = 0;
+            for _p in ps {
+                next = match self.cards.pop() {
+                    Some(t) => {
+                        pfs[i](t);
+                        i += 1;
+                        true
+                    }
+                    None => false,
+                };
             }
-            None => false,
         }
     }
 

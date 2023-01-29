@@ -4,15 +4,18 @@ use std::rc::Rc;
 
 use crate::lib::card::Card;
 use crate::lib::deck;
+use crate::lib::deck::{DECK_ONE, DECK_TWO};
 use crate::lib::judger;
 use crate::lib::player;
+use crate::lib::player::PlayerNum;
 use crate::lib::style;
 
+// NumConfig(PlayerNum, DeckNum, ReserveNum)
 #[derive(Debug, PartialEq)]
-pub enum SessionType {
-    Three,
-    Four,
-    Five,
+pub enum NumConfig {
+    Three(u8, u8, u8),
+    Four(u8, u8, u8),
+    None,
 }
 
 #[derive(Debug)]
@@ -21,33 +24,33 @@ pub struct Session<'a> {
     judger: judger::Judger,
     players: Vec<Rc<RefCell<player::Player<'a>>>>,
     round: Round<'a>,
-    stype: SessionType,
+    player_num: u8,
+    deck_num: u8,
+    reserve_num: u8,
 }
 
 #[derive(Debug)]
 pub struct Round<'a> {
-    player: Option<player::Player<'a>>,
+    player: Option<Rc<RefCell<player::Player<'a>>>>,
     style: Option<style::CardStyle>,
 }
 
 impl<'a> Session<'a> {
-    pub fn new(id: u64, stype: SessionType) -> Result<Session<'a>, &'a str> {
-        let (deck_num, reserve_num): (u8, u8);
+    pub fn new(id: u64, nc: NumConfig) -> Result<Session<'a>, &'a str> {
+        // let (deck_num, reserve_num): (u8, u8);
 
-        if stype == SessionType::Three {
-            deck_num = 1;
-            reserve_num = 3;
-        } else if stype == SessionType::Four {
-            deck_num = 2;
-            reserve_num = 8;
-        } else {
-            return Err("only 3 or 4 players in one game.");
-        }
+        let (player_num, deck_num, reserve_num) = match nc {
+            NumConfig::Three(_, _, _) => (3, DECK_ONE, 3),
+            NumConfig::Four(_, _, _) => (4, DECK_TWO, 8),
+            NumConfig::None => {
+                return Err("only 3 or 4 players in one game.");
+            }
+        };
 
         let ds = deck::Deck::new(deck_num);
         // println!("deck card: {:?}", ds);
 
-        let mut j = judger::Judger::new(ds);
+        let mut j = judger::Judger::new(deck_num, ds);
         j.shuffle();
 
         // println!("judger shuffle: {:?}", j);
@@ -64,7 +67,9 @@ impl<'a> Session<'a> {
                 player: None,
                 style: None,
             },
-            stype,
+            player_num,
+            deck_num,
+            reserve_num,
         })
     }
 
@@ -74,19 +79,7 @@ impl<'a> Session<'a> {
         self.players.push(p);
     }
 
-    pub fn begin(&mut self) -> bool {
-        if self.stype == SessionType::Three {
-            if self.players.len() != 3 {
-                return false;
-            }
-        } else if self.stype == SessionType::Four {
-            if self.players.len() != 4 {
-                return false;
-            }
-        } else {
-            return false;
-        }
-
+    pub fn begin(&mut self) {
         let mut ps: Vec<Rc<RefCell<player::Player>>> = vec![];
 
         for i in &self.players {
@@ -94,8 +87,6 @@ impl<'a> Session<'a> {
         }
 
         self.judger.deal(&ps);
-
-        true
     }
 
     pub fn set_lord(&mut self, i: usize) {
@@ -103,7 +94,7 @@ impl<'a> Session<'a> {
         self.judger.deal_lord(p.clone());
     }
 
-    pub fn play_round(&mut self, p: player::Player<'a>, cs: &Vec<Card>) {
+    pub fn play_round(&mut self, p: Rc<RefCell<player::Player<'a>>>, cs: &Vec<Card>) {
         let now_cs: Option<style::CardStyle>;
 
         if self.round.style.is_none() {
@@ -117,11 +108,11 @@ impl<'a> Session<'a> {
         }
 
         self.round.style = now_cs;
-        self.round.player = Some(p);
+        self.round.player = Some(p.clone());
 
-        // for c in cs {
-        //     p.del_card(&c);
-        // }
+        for c in cs {
+            p.borrow_mut().del_card(&c);
+        }
 
         return;
     }
@@ -135,7 +126,7 @@ mod tests {
     #[test]
     fn test_session_3_players() {
         // 3 players, 1 deck of card
-        let ws = Session::new(1001, SessionType::Three);
+        let ws = Session::new(1001, NumConfig::Three(0, 0, 0));
         let mut s = match ws {
             Ok(s) => s,
             Err(e) => {
@@ -151,18 +142,14 @@ mod tests {
         s.push_player(p2);
         s.push_player(p3);
 
-        let started = s.begin();
+        s.begin();
 
         // each person has 17 cards
         for p in s.players.iter() {
             assert_eq!(17, p.borrow().cards_count());
         }
 
-        assert_eq!(true, started);
-
-        if started {
-            s.set_lord(2);
-        }
+        s.set_lord(2);
 
         println!("session: {:?}", s);
 
@@ -174,7 +161,7 @@ mod tests {
     #[test]
     fn test_session_4_players() {
         // 4 players, 2 decks of cards
-        let ws = Session::new(1002, SessionType::Four);
+        let ws = Session::new(1002, NumConfig::Four(0, 0, 0));
         let mut s = match ws {
             Ok(s) => s,
             Err(e) => {
@@ -194,18 +181,14 @@ mod tests {
         s.push_player(p3);
         s.push_player(p4);
 
-        let started = s.begin();
+        s.begin();
 
         // each person has 25 cards
         for p in s.players.iter() {
             assert_eq!(25, p.borrow().cards_count());
         }
 
-        assert_eq!(true, started);
-
-        if started {
-            s.set_lord(1);
-        }
+        s.set_lord(1);
 
         println!("session: {:?}", s);
 
@@ -215,12 +198,11 @@ mod tests {
     }
 
     #[test]
-    fn test_session_5_players() {
-        // 5 players
-        let ws = Session::new(1003, SessionType::Five);
+    fn test_session_none_numconfig() {
+        let ws = Session::new(1003, NumConfig::None);
         match ws {
             Ok(_) => {
-                panic!("no five players situation.");
+                panic!("no this situation: NumConfig::None.");
             }
             Err(e) => {
                 assert_eq!("only 3 or 4 players in one game.", e);

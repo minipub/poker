@@ -3,6 +3,12 @@ use std::rc::Rc;
 
 use crate::lib::card::Card;
 
+#[derive(Debug, PartialEq)]
+pub enum PlayerNum {
+    Three(u8),
+    Four(u8),
+}
+
 #[derive(Debug)]
 pub struct Player<'a> {
     id: u8,
@@ -27,17 +33,39 @@ impl<'a> Player<'a> {
         self.is_lord = true;
     }
 
-    pub fn push_card(&mut self, t: Card) {
+    pub fn push_card_func(p: Rc<RefCell<Player>>, is_diff: bool) -> Box<dyn FnMut(Card) + '_> {
+        if is_diff {
+            Box::new(move |c| p.borrow_mut().push_diff_card(c))
+        } else {
+            Box::new(move |c| p.borrow_mut().push_dup_card(c))
+        }
+    }
+
+    pub fn push_diff_card(&mut self, t: Card) {
         // keep the cards in ascending order
         let mut cm = self.cards.borrow_mut();
         match cm.binary_search_by(|pb| pb.partial_cmp(&t).unwrap()) {
-            // TODO two deck of cards need to be handled
-            // two cards would be equal in two deck of cards
             Ok(idx) => {
                 eprintln!(
                     "push_card err: shouldn't find element idx {:?}, now_cards: {:?}, c: {:?}",
                     idx, cm, t,
                 );
+                return;
+            }
+            Err(idx) => {
+                cm.insert(idx, t);
+                return;
+            }
+        };
+    }
+
+    // push dup cards when two of them may be equal
+    // two cards would be equal in two deck of cards
+    pub fn push_dup_card(&mut self, t: Card) {
+        let mut cm = self.cards.borrow_mut();
+        match cm.binary_search_by(|pb| pb.partial_cmp(&t).unwrap()) {
+            Ok(idx) => {
+                cm.insert(idx, t);
                 return;
             }
             Err(idx) => {
@@ -92,7 +120,7 @@ mod tests {
             Card::new(Point::SilverJoker(0), Color::None),
         ];
         for c in &cs {
-            p1.push_card(*c);
+            p1.push_diff_card(*c);
         }
         println!("p1: {:?}", p1);
         assert_eq!(cs[3], *(p1.cards.borrow().get(0).unwrap()));
@@ -119,7 +147,7 @@ mod tests {
             Card::new(Point::SilverJoker(0), Color::None),
         ];
         for c in &cs {
-            p1.push_card(*c);
+            p1.push_diff_card(*c);
         }
 
         p1.del_card(&Card::new(Point::Five(0), Color::Hearts));
