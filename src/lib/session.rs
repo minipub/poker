@@ -94,7 +94,18 @@ impl<'a> Session<'a> {
         self.judger.deal_lord(p.clone());
     }
 
-    pub fn play_round(&mut self, p: Rc<RefCell<player::Player<'a>>>, cs: &Vec<Card>) {
+    pub fn play_round(&mut self, p: Rc<RefCell<player::Player<'a>>>, cs: &Vec<Card>) -> bool {
+        let mut ids: Vec<usize> = vec![];
+        for c in cs {
+            match p.borrow_mut().find_card(&c) {
+                Ok(i) => ids.push(i),
+                Err(i) => {
+                    eprintln!("find card err: can't find element but before idx {:?}", i);
+                    return false;
+                }
+            };
+        }
+
         let now_cs: Option<style::CardStyle>;
 
         if self.round.style.is_none() {
@@ -104,17 +115,17 @@ impl<'a> Session<'a> {
         }
 
         if now_cs.is_none() {
-            return;
+            return false;
         }
 
         self.round.style = now_cs;
         self.round.player = Some(p.clone());
 
-        for c in cs {
-            p.borrow_mut().del_card(&c);
+        for i in ids {
+            p.borrow_mut().del_card_by_idx(i);
         }
 
-        return;
+        true
     }
 }
 
@@ -209,4 +220,35 @@ mod tests {
             }
         };
     }
+
+    // #[test]
+    // fn test_play_round() {
+    //     // 3 players, 1 deck of card
+    //     let ws = Session::new(1004, NumConfig::Three(0, 0, 0));
+    //     let mut s = match ws {
+    //         Ok(s) => s,
+    //         Err(e) => {
+    //             panic!("{:?}", e);
+    //         }
+    //     };
+
+    //     let p1 = Rc::new(RefCell::new(Player::new(1, "john")));
+    //     let p2 = Rc::new(RefCell::new(Player::new(2, "mike")));
+    //     let p3 = Rc::new(RefCell::new(Player::new(3, "alex")));
+
+    //     s.push_player(p1);
+    //     s.push_player(p2);
+    //     s.push_player(p3);
+
+    //     s.begin();
+
+    //     // each person has 17 cards
+    //     for p in s.players.iter() {
+    //         assert_eq!(17, p.borrow().cards_count());
+    //     }
+
+    //     s.set_lord(2);
+
+    //     println!("session: {:?}", s);
+    // }
 }

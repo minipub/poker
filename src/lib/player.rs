@@ -75,6 +75,16 @@ impl<'a> Player<'a> {
         };
     }
 
+    pub fn find_card(&mut self, t: &Card) -> Result<usize, usize> {
+        self.cards
+            .borrow_mut()
+            .binary_search_by(|pb| pb.partial_cmp(t).unwrap())
+    }
+
+    pub fn del_card_by_idx(&mut self, idx: usize) {
+        self.cards.borrow_mut().remove(idx);
+    }
+
     pub fn del_card(&mut self, t: &Card) {
         let mut cm = self.cards.borrow_mut();
         match cm.binary_search_by(|pb| pb.partial_cmp(t).unwrap()) {
