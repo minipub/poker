@@ -4,7 +4,7 @@ use std::cmp::{PartialEq, PartialOrd};
 use crate::lib::color::*;
 use crate::lib::point::*;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct Card {
     point: Point,
     color: Color,
@@ -15,13 +15,6 @@ impl Card {
         Card {
             point: Point::new(p),
             color: c,
-        }
-    }
-
-    pub fn default() -> Card {
-        Card {
-            point: Point::None,
-            color: Color::None,
         }
     }
 

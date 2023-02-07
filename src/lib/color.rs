@@ -7,6 +7,12 @@ pub enum Color {
     None,
 }
 
+impl Default for Color {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
