@@ -18,8 +18,8 @@ use crate::lib::style::iface::*;
 #[derive(Debug)]
 pub enum CardStyle {
     Fools(Rc<fools::Fools>),
-    // FourWithPairs(Rc<four_with_pairs::FourWithPairs>),
-    // FourWithTwo(Rc<four_with_two::FourWithTwo>),
+    FourWithPairs(Rc<four_with_pairs::FourWithPairs>),
+    FourWithTwo(Rc<four_with_two::FourWithTwo>),
     Boom(Rc<boom::Bomb>),
     Chain(Rc<chain::Chain>),
     Pairs(Rc<pairs::Pairs>),
@@ -33,6 +33,10 @@ impl CardStyle {
     pub fn cmp(&self, cs: &Vec<Card>) -> Option<CardStyle> {
         match self {
             CardStyle::Fools(x) => x.cmp(&cs),
+
+            CardStyle::FourWithPairs(x) => x.cmp(&cs),
+
+            CardStyle::FourWithTwo(x) => x.cmp(&cs),
 
             CardStyle::Boom(x) => x.cmp(&cs),
 
@@ -114,5 +118,42 @@ mod tests {
         assert_eq!(12, a[2].unwrap_point());
         assert_eq!(13, a[3].unwrap_point());
         assert_eq!(14, a[4].unwrap_point());
+    }
+
+    #[test]
+    fn test_cmp() {
+        {
+            let t0 = Card::new(Point::Nine(0), Color::Spades);
+            let t1 = Card::new(Point::Ten(0), Color::Spades);
+            let t2 = Card::new(Point::King(0), Color::Plum);
+            let t3 = Card::new(Point::Jack(0), Color::Square);
+            let t4 = Card::new(Point::Queen(0), Color::Square);
+            let t5 = Card::new(Point::Ace(0), Color::Hearts);
+
+            let cs = vec![t0, t1, t2, t3, t4, t5];
+
+            let x = CardStyle::Chain(Rc::new(chain::Chain(vec![t0, t1, t2, t3, t4])));
+
+            let y = x.cmp(&cs);
+
+            assert_eq!(true, y.is_none());
+        }
+
+        {
+            let t0 = Card::new(Point::Nine(0), Color::Spades);
+            let t1 = Card::new(Point::Ten(0), Color::Spades);
+            let t2 = Card::new(Point::King(0), Color::Plum);
+            let t3 = Card::new(Point::Jack(0), Color::Square);
+            let t4 = Card::new(Point::Queen(0), Color::Square);
+            let t5 = Card::new(Point::Ace(0), Color::Hearts);
+
+            let cs = vec![t1, t2, t3, t4, t5];
+
+            let x = CardStyle::Chain(Rc::new(chain::Chain(vec![t0, t1, t2, t3, t4])));
+
+            let y = x.cmp(&cs);
+
+            assert_eq!(true, y.is_some());
+        }
     }
 }

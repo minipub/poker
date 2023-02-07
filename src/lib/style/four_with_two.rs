@@ -4,10 +4,37 @@ use std::rc::Rc;
 
 use crate::lib::card::Card;
 use crate::lib::style::iface::*;
+use crate::lib::style::CardStyle;
 use crate::lib::util::card_buckets;
 
 #[derive(Debug)]
 pub struct FourWithTwo(pub [Card; 4], Vec<Card>);
+
+impl FourWithTwo {
+    pub fn to_style(cs: &Vec<Card>) -> Option<CardStyle> {
+        let mut s = FourWithTwo([Card::default(); 4], vec![Card::default()]);
+        let e = s.suit(&cs);
+        if e == None {
+            return Some(CardStyle::FourWithTwo(Rc::new(s)));
+        }
+        None
+    }
+}
+
+impl StyleCmp for FourWithTwo {
+    fn cmp(&self, cs: &Vec<Card>) -> Option<CardStyle> {
+        let mut y = FourWithTwo([Card::default(); 4], vec![Card::default()]);
+        let e = y.suit(&cs);
+        if e.is_none() {
+            if y > *(self) {
+                return Some(CardStyle::FourWithTwo(Rc::new(y)));
+            } else {
+                return None;
+            }
+        }
+        None
+    }
+}
 
 impl Suit for FourWithTwo {
     type Error = &'static str;
