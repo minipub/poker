@@ -21,6 +21,21 @@ impl ThreeWithPairs {
     }
 }
 
+impl StyleCmp for ThreeWithPairs {
+    fn cmp(&self, cs: &Vec<Card>) -> Option<CardStyle> {
+        let mut y = ThreeWithPairs(vec![]);
+        let e = y.suit(&cs);
+        if e.is_none() {
+            if y > *(self) {
+                return Some(CardStyle::ThreeWithPairs(Rc::new(y)));
+            } else {
+                return None;
+            }
+        }
+        None
+    }
+}
+
 impl Suit for ThreeWithPairs {
     type Error = &'static str;
 

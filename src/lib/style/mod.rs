@@ -32,100 +32,22 @@ pub enum CardStyle {
 impl CardStyle {
     pub fn cmp(&self, cs: &Vec<Card>) -> Option<CardStyle> {
         match self {
-            CardStyle::Fools(_) => {
-                return None;
-            }
+            CardStyle::Fools(x) => x.cmp(&cs),
 
-            CardStyle::Boom(x) => {
-                let mut y = boom::Bomb([Card::default(); 4]);
-                let e = y.suit(&cs);
-                if e.is_none() && y > *(x.as_ref()) {
-                    return Some(CardStyle::Boom(Rc::new(y)));
-                }
-            }
+            CardStyle::Boom(x) => x.cmp(&cs),
 
-            CardStyle::Chain(x) => {
-                let mut y = chain::Chain(vec![]);
-                let e = y.suit(&cs);
-                if e.is_none() {
-                    if y > *(x.as_ref()) {
-                        return Some(CardStyle::Chain(Rc::new(y)));
-                    } else {
-                        return None;
-                    }
-                }
-            }
+            CardStyle::Chain(x) => x.cmp(&cs),
 
-            CardStyle::Pairs(x) => {
-                let mut y = pairs::Pairs(vec![]);
-                let e = y.suit(&cs);
-                if e.is_none() {
-                    if y > *(x.as_ref()) {
-                        return Some(CardStyle::Pairs(Rc::new(y)));
-                    } else {
-                        return None;
-                    }
-                }
-            }
+            CardStyle::Pairs(x) => x.cmp(&cs),
 
-            CardStyle::ThreeWithOnes(x) => {
-                let mut y = three_with_ones::ThreeWithOnes(vec![]);
-                let e = y.suit(&cs);
-                if e.is_none() {
-                    if y > *(x.as_ref()) {
-                        return Some(CardStyle::ThreeWithOnes(Rc::new(y)));
-                    } else {
-                        return None;
-                    }
-                }
-            }
+            CardStyle::ThreeWithOnes(x) => x.cmp(&cs),
 
-            CardStyle::ThreeWithPairs(x) => {
-                let mut y = three_with_pairs::ThreeWithPairs(vec![]);
-                let e = y.suit(&cs);
-                if e.is_none() {
-                    if y > *(x.as_ref()) {
-                        return Some(CardStyle::ThreeWithPairs(Rc::new(y)));
-                    } else {
-                        return None;
-                    }
-                }
-            }
+            CardStyle::ThreeWithPairs(x) => x.cmp(&cs),
 
-            CardStyle::Threes(x) => {
-                let mut y = threes::Threes(vec![]);
-                let e = y.suit(&cs);
-                if e.is_none() {
-                    if y > *(x.as_ref()) {
-                        return Some(CardStyle::Threes(Rc::new(y)));
-                    } else {
-                        return None;
-                    }
-                }
-            }
+            CardStyle::Threes(x) => x.cmp(&cs),
 
-            CardStyle::Single(x) => {
-                let mut y = single::Single(Card::default());
-                let e = y.suit(&cs);
-                if e.is_none() {
-                    if y.0 > x.0 {
-                        return Some(CardStyle::Single(Rc::new(y)));
-                    } else {
-                        return None;
-                    }
-                }
-            }
+            CardStyle::Single(x) => x.cmp(&cs),
         }
-
-        {
-            let mut y = boom::Bomb([Card::default(); 4]);
-            let e = y.suit(&cs);
-            if e.is_none() {
-                return Some(CardStyle::Boom(Rc::new(y)));
-            }
-        }
-
-        None
     }
 
     pub fn to_style(cs: &Vec<Card>) -> Option<CardStyle> {

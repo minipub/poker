@@ -3,7 +3,7 @@ use std::cmp::{PartialEq, PartialOrd};
 use std::rc::Rc;
 
 use crate::lib::card::*;
-use crate::lib::style::iface::Suit;
+use crate::lib::style::iface::*;
 use crate::lib::style::CardStyle;
 
 #[derive(Debug)]
@@ -15,6 +15,17 @@ impl Bomb {
         let e = s.suit(&cs);
         if e == None {
             return Some(CardStyle::Boom(Rc::new(s)));
+        }
+        None
+    }
+}
+
+impl StyleCmp for Bomb {
+    fn cmp(&self, cs: &Vec<Card>) -> Option<CardStyle> {
+        let mut y = Bomb([Card::default(); 4]);
+        let e = y.suit(&cs);
+        if e.is_none() && y > *self {
+            return Some(CardStyle::Boom(Rc::new(y)));
         }
         None
     }

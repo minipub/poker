@@ -20,6 +20,21 @@ impl Pairs {
     }
 }
 
+impl StyleCmp for Pairs {
+    fn cmp(&self, cs: &Vec<Card>) -> Option<CardStyle> {
+        let mut y = Pairs(vec![]);
+        let e = y.suit(&cs);
+        if e.is_none() {
+            if y > *(self) {
+                return Some(CardStyle::Pairs(Rc::new(y)));
+            } else {
+                return None;
+            }
+        }
+        None
+    }
+}
+
 impl Suit for Pairs {
     type Error = &'static str;
 

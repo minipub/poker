@@ -23,6 +23,12 @@ impl Fools {
     }
 }
 
+impl StyleCmp for Fools {
+    fn cmp(&self, cs: &Vec<Card>) -> Option<CardStyle> {
+        None
+    }
+}
+
 impl Suit for Fools {
     type Error = &'static str;
 

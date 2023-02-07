@@ -20,6 +20,21 @@ impl Chain {
     }
 }
 
+impl StyleCmp for Chain {
+    fn cmp(&self, cs: &Vec<Card>) -> Option<CardStyle> {
+        let mut y = Chain(vec![]);
+        let e = y.suit(&cs);
+        if e.is_none() {
+            if y > *self {
+                return Some(CardStyle::Chain(Rc::new(y)));
+            } else {
+                return None;
+            }
+        }
+        None
+    }
+}
+
 impl Suit for Chain {
     type Error = &'static str;
 

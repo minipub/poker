@@ -17,6 +17,21 @@ impl Single {
     }
 }
 
+impl StyleCmp for Single {
+    fn cmp(&self, cs: &Vec<Card>) -> Option<CardStyle> {
+        let mut y = Single(Card::default());
+        let e = y.suit(&cs);
+        if e.is_none() {
+            if y.0 > self.0 {
+                return Some(CardStyle::Single(Rc::new(y)));
+            } else {
+                return None;
+            }
+        }
+        None
+    }
+}
+
 impl Suit for Single {
     type Error = &'static str;
 

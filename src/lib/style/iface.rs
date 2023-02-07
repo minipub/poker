@@ -13,4 +13,8 @@ pub trait Layer {
     }
 }
 
+pub trait StyleCmp {
+    fn cmp(&self, cs: &Vec<Card>) -> Option<CardStyle>;
+}
+
 pub type ToStyle = fn(cs: &Vec<Card>) -> Option<CardStyle>;

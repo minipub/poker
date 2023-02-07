@@ -21,6 +21,21 @@ impl Threes {
     }
 }
 
+impl StyleCmp for Threes {
+    fn cmp(&self, cs: &Vec<Card>) -> Option<CardStyle> {
+        let mut y = Threes(vec![]);
+        let e = y.suit(&cs);
+        if e.is_none() {
+            if y > *(self) {
+                return Some(CardStyle::Threes(Rc::new(y)));
+            } else {
+                return None;
+            }
+        }
+        None
+    }
+}
+
 impl Suit for Threes {
     type Error = &'static str;
 
